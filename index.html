@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Servicios de Programación Web</title>
+  <style>
+    /* --- ESTILOS GENERALES Y DE LAYOUT --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      color: #333;
+      line-height: 1.6;
+    }
+    /* Header sticky y centrado */
+    header {
+      background-color: #0d47a1;
+      color: white;
+      padding: 18px 20px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 70px;
+    }
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    /* Botón de usuario anclado al header */
+    .user-btn {
+      background: #ffb300;
+      color: #0d47a1;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 1.5em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      right: 30px;
+      top: 13px;
+      transition: background 0.2s;
+    }
+    .user-btn:hover {
+      background: #ffd54f;
+    }
+    /* Barra de navegación sticky */
+    nav {
+      background-color: #1565c0;
+      padding: 8px 0;
+      text-align: center;
+      position: sticky;
+      top: 70px;
+      z-index: 99;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1em;
+      padding: 6px 12px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    nav a:hover {
+      background: #1976d2;
+    }
+    main {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    section, article, aside, footer {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      color: #0d47a1;
+      margin-bottom: 10px;
+    }
+    article h3 {
+      color: #1976d2;
+    }
+    label {
+      display: inline-block;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #1976d2;
+      color: white;
+    }
+    footer {
+      background-color: #0d47a1;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    /* --- ESTILOS DEL POPUP DE ROL --- */
+    #loginPopup {
+      display: none;
+      position: fixed;
+      top: 110px;
+      right: 50px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+      padding: 28px 30px 18px 30px;
+      min-width: 280px;
+      z-index: 2000;
+      border: 1px solid #e3e3e3;
+      animation: popupShow 0.2s;
+    }
+    @keyframes popupShow {
+      from { opacity: 0; transform: translateY(-20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    #closePopup {
+      position:absolute;
+      top:8px;
+      right:12px;
+      cursor:pointer;
+      font-size:1.2em;
+      color:#888;
+    }
+    .roles-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 18px 0 10px 0;
+    }
+    .roles-group label {
+      font-weight: normal;
+      color: #1976d2;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .roles-group input[type="radio"] {
+      accent-color: #1976d2;
+    }
+    .rol-msg {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #d32f2f;
+    }
+    .rol-msg.success {
+      color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER con botón de usuario -->
+  <header>
+    <div class="header-content">
+      <h1 style="font-size:1.5em; margin-bottom: 4px;">Soluciones Profesionales en Programación Web</h1>
+      <p style="font-size:1em; font-weight: 400;">Transformamos ideas en productos digitales efectivos</p>
+    </div>
+    <!-- Botón para abrir el popup de rol -->
+    <button id="userBtn" class="user-btn" title="Cambiar rol">
+      <span>&#128100;</span>
+    </button>
+  </header>
+
+  <!-- POPUP para seleccionar rol o registrarse -->
+  <div id="loginPopup">
+    <span id="closePopup">&times;</span>
+    <h2 style="color:#0d47a1; font-size:1.2em; margin-top:0;">Selecciona tu rol</h2>
+    <div id="popupContent">
+      <!-- Aquí se renderiza el contenido dinámicamente -->
+    </div>
+    <div id="rolMsg" class="rol-msg"></div>
+  </div>
+
+  <!-- NAVEGACIÓN PRINCIPAL -->
+  <nav>
+    <ul>
+      <li><a href="#">Inicio</a></li>
+      <li><a href="#">Servicios</a></li>
+      <li><a href="#">Contacto</a></li>
+    </ul>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main>
+    <section>
+      <h2>Acerca de Nosotros</h2>
+      <p>Somos un equipo apasionado por la tecnología. Ayudamos a emprendedores y empresas a construir su presencia digital con herramientas modernas y seguras.</p>
+    </section>
+
+    <section>
+      <h2>Servicios</h2>
+      <article>
+        <h3>Diseño Web</h3>
+        <p>Diseños personalizados, responsivos y enfocados en la experiencia del usuario.</p>
+      </article>
+      <article>
+        <h3>Aplicaciones Web</h3>
+        <p>Desarrollo de plataformas interactivas para automatización, e-commerce, y más.</p>
+      </article>
+      <article>
+        <h3>Soporte y Mantenimiento</h3>
+        <p>Actualizaciones constantes, seguridad y mejoras continuas para tu sitio web.</p>
+      </article>
+    </section>
+
+    <aside>
+      <h3>Noticias</h3>
+      <p>Inscríbete a nuestros cursos gratuitos de programación en línea. ¡Cupos limitados!</p>
+    </aside>
+  </main>
+
+  <!-- FORMULARIO CONDICIONAL: solo se puede enviar si se acepta -->
+  <section style="max-width: 500px; margin: 30px auto 20px auto; padding: 24px;">
+    <h2>Formulario</h2>
+    <form style="display: flex; flex-direction: column; gap: 18px;">
+      <label style="font-weight: normal;">
+        <input type="checkbox" id="acepto"> Acepto los términos y condiciones
+      </label>
+        <button
+        id="btnEnviar"
+        disabled
+        style="background: #bdbdbd; color: white; border: none; padding: 10px 0; border-radius: 6px; font-size: 1em; cursor: not-allowed; transition: background 0.2s;"
+      >Enviar</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Soluciones Web Profesionales. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- SECCIÓN DE VISTA SEGÚN EL ROL -->
+  <section>
+    <h2>Vista según el rol</h2>
+    <article id="rolVisitante">
+      <h3>Visitante</h3>
+      <p>Acceso público.</p>
+    </article>
+    <article id="rolUsuario" hidden>
+      <h3>Usuario Registrado</h3>
+      <p>Acceso a su cuenta y funciones.</p>
+    </article>
+    <article id="rolAdmin" hidden>
+      <h3>Administrador</h3>
+      <p>Gestión completa del sistema.</p>
+    </article>
+  </section>
+
+  <!-- TABLA DE ETIQUETAS SEMÁNTICAS HTML5 -->
+  <section>
+    <h2>Tabla de Etiquetas Semánticas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Elemento</th>
+          <th>Descripción</th>
+          <th>Manera de Aplicación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&lt;header&gt;</td>
+          <td>Encabezado de la página o sección.</td>
+          <td>&lt;header&gt;Contenido&lt;/header&gt;</td>
+        </tr>
+        <tr>
+          <td>&lt;nav&gt;</td>
+          <td>Zona de navegación del sitio.</td>
+          <td>&lt;nav&gt;&lt;ul&gt;&lt;li&gt;&lt;a&gt;&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/nav&gt;</td>
+        </tr>
+        <tr>
+          <td>&lt;main&gt;</td>
+          <td>Contenido principal del sitio.</td>
+          <td>&lt;main&gt;Contenido relevante&lt;/main&gt;</td>
+        </tr>
+        <tr>
+          <td>&lt;section&gt;</td>
+          <td>Sección temática del contenido.</td>
+          <td>&lt;section&gt;Contenido agrupado&lt;/section&gt;</td>
+        </tr>
+        <tr>
+          <td>&lt;article&gt;</td>
+          <td>Contenido independiente y autocontenido.</td>
+          <td>&lt;article&gt;Artículo o publicación&lt;/article&gt;</td>
+        </tr>
+        <tr>
+          <td>&lt;aside&gt;</td>
+          <td>Contenido relacionado o complementario.</td>
+          <td>&lt;aside&gt;Notas, enlaces relacionados, etc.&lt;/aside&gt;</td>
+        </tr>
+        <tr>
+          <td>&lt;footer&gt;</td>
+          <td>Pie de página de la sección o documento.</td>
+          <td>&lt;footer&gt;Información de contacto, derechos de autor, etc.&lt;/footer&gt;</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SCRIPTS DE INTERACTIVIDAD -->
+  <script>
+    // Estado actual del rol y registro
+    let currentRol = "visitante";
+    let registrado = false;
+
+    // Elementos del DOM para el popup y las vistas de rol
+    const userBtn = document.getElementById('userBtn');
+    const loginPopup = document.getElementById('loginPopup');
+    const closePopup = document.getElementById('closePopup');
+    const rolMsg = document.getElementById('rolMsg');
+    const popupContent = document.getElementById('popupContent');
+    const rolVisitante = document.getElementById('rolVisitante');
+    const rolUsuario = document.getElementById('rolUsuario');
+    const rolAdmin = document.getElementById('rolAdmin');
+
+    // Renderiza el popup según si el usuario está registrado o no
+    function renderPopup() {
+      if (!registrado) {
+        // Si no está registrado, solo puede ser visitante y puede marcar para registrarse
+        popupContent.innerHTML = `
+          <label style="font-weight:normal;">
+            <input type="checkbox" id="registrarCheck"> Registrarme como usuario
+          </label>
+        `;
+        rolMsg.textContent = "Acceso como visitante.";
+        rolMsg.className = "rol-msg";
+        document.getElementById('registrarCheck').checked = false;
+        document.getElementById('registrarCheck').onchange = function() {
+          if (this.checked) {
+            registrado = true;
+            currentRol = "usuario";
+            renderPopup();
+            mostrarRol(currentRol);
+          }
+        };
+      } else {
+        // Si está registrado, puede elegir entre usuario y admin, o cerrar sesión
+        popupContent.innerHTML = `
+          <div class="roles-group">
+            <label><input type="radio" name="rol" value="usuario" ${currentRol === "usuario" ? "checked" : ""}> Usuario Registrado</label>
+            <label><input type="radio" name="rol" value="admin" ${currentRol === "admin" ? "checked" : ""}> Administrador</label>
+          </div>
+          <button id="logoutBtn" style="margin-top:10px;background:#d32f2f;color:white;border:none;padding:7px 16px;border-radius:6px;cursor:pointer;">Cerrar sesión</button>
+        `;
+        if (currentRol === "usuario") {
+          rolMsg.textContent = "¡Bienvenido usuario registrado!";
+          rolMsg.className = "rol-msg success";
+        } else if (currentRol === "admin") {
+          rolMsg.textContent = "¡Gestión de administrador activa!";
+          rolMsg.className = "rol-msg success";
+        }
+        // Cambiar de rol
+        popupContent.querySelectorAll('input[name="rol"]').forEach(radio => {
+          radio.onchange = (e) => {
+            currentRol = e.target.value;
+            mostrarRol(currentRol);
+            renderPopup();
+          };
+        });
+        // Cerrar sesión
+        document.getElementById('logoutBtn').onclick = () => {
+          registrado = false;
+          currentRol = "visitante";
+          mostrarRol(currentRol);
+          renderPopup();
+        };
+      }
+    }
+
+    // Muestra solo la sección correspondiente al rol activo
+    function mostrarRol(rol) {
+      rolVisitante.hidden = rol !== "visitante";
+      rolUsuario.hidden = rol !== "usuario";
+      rolAdmin.hidden = rol !== "admin";
+    }
+
+    // Abrir popup al hacer clic en el botón de usuario
+    userBtn.onclick = () => {
+      loginPopup.style.display = 'block';
+      renderPopup();
+      mostrarRol(currentRol);
+    };
+
+    // Cerrar popup al hacer clic en la X
+    closePopup.onclick = () => {
+      loginPopup.style.display = 'none';
+    };
+
+    // Cerrar popup al hacer clic fuera de él
+    window.addEventListener('click', function(event) {
+      if (event.target === loginPopup) {
+        loginPopup.style.display = "none";
+      }
+    });
+
+    // Lógica para el formulario condicional de suscripción
+    const acepto = document.getElementById('acepto');
+    const btnEnviar = document.getElementById('btnEnviar');
+    if (acepto && btnEnviar) {
+      acepto.addEventListener('change', function() {
+        if (this.checked) {
+          btnEnviar.disabled = false;
+          btnEnviar.style.background = "#1976d2";
+          btnEnviar.style.cursor = "pointer";
+        } else {
+          btnEnviar.disabled = true;
+          btnEnviar.style.background = "#bdbdbd";
+          btnEnviar.style.cursor = "not-allowed";
+        }
+      });
+    }
+
+    // Por defecto, mostrar visitante
+    mostrarRol(currentRol);
+  </script>
+</body>
+</html>
